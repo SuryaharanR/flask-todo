@@ -1,4 +1,4 @@
-name: CD Pipeline
+name: Local CD Pipeline
 
 on:
   push:
@@ -6,20 +6,37 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted   # Must run on your Ubuntu machine with Minikube and Docker
 
     steps:
+      # 1️⃣ Checkout your code
       - name: Checkout Code
         uses: actions/checkout@v3
 
-      - name: Login to Docker Hub
-        uses: docker/login-action@v2
-        with:
-          username: ${{ secrets.DOCKER_USERNAME }}
-          password: ${{ secrets.DOCKER_PASSWORD }}
+      # 2️⃣ Point Docker to Minikube's Docker daemon
+      - name: Use Minikube Docker
+        run: eval $(minikube docker-env)
 
+      # 3️⃣ Build Docker image inside Minikube
       - name: Build Docker image
-        run: docker build -t haransurya/flask-todo:latest .
+        run: docker build -t flask-todo:latest .
 
-      - name: Push Docker image
-        run: docker push haransurya/flask-todo:latest
+      # 4️⃣ (Optional) Push Docker image to Docker Hub
+      # - name: Login to Docker Hub
+      #   uses: docker/login-action@v2
+      #   with:
+      #     username: ${{ secrets.DOCKER_USERNAME }}
+      #     password: ${{ secrets.DOCKER_PASSWORD }}
+      # - name: Push Docker image
+      #   run: docker push haransurya/flask-todo:latest
+
+      # 5️⃣ Apply deployment changes to Kubernetes
+      - name: Update Kubernetes Deployment
+        run: |
+          kubectl rollout restart deployment flask-todo-deployment
+          kubectl rollout status deployment flask-todo-deployment
+
+      # 6️⃣ (Optional) Expose service
+      # If service already exists, skip this step
+      - name: Apply Service Manifest
+        run: kubectl apply -f k8s/service.yaml
