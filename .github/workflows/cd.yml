@@ -39,4 +39,4 @@ jobs:
       # 6️⃣ (Optional) Expose service
       # If service already exists, skip this step
       - name: Apply Service Manifest
-        run: kubectl apply -f k8s/service.yaml
+        run: kubectl apply -f k8s/service.yml
