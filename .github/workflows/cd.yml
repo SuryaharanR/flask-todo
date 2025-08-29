@@ -9,19 +9,28 @@ jobs:
     runs-on: self-hosted
 
     steps:
+      # 1️⃣ Checkout your code
       - name: Checkout Code
         uses: actions/checkout@v3
 
+      # 2️⃣ Point Docker to Minikube's Docker daemon
       - name: Use Minikube Docker
         run: eval $(minikube docker-env)
+        working-directory: /home/surya/flask-todo
 
+      # 3️⃣ Build Docker image inside Minikube
       - name: Build Docker image
         run: docker build -t flask-todo:latest .
+        working-directory: /home/surya/flask-todo
 
+      # 4️⃣ Apply Deployment manifest
       - name: Apply Deployment
         run: |
           kubectl apply -f k8s/deployment.yml
           kubectl rollout status deployment flask-todo-deployment
+        working-directory: /home/surya/flask-todo
 
+      # 5️⃣ Apply Service manifest
       - name: Apply Service
         run: kubectl apply -f k8s/service.yml
+        working-directory: /home/surya/flask-todo
