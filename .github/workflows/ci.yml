@@ -31,3 +31,7 @@ jobs:
       # Step 4: Run tests
       - name: Run Tests
         run: pytest
+
+      - name: List files
+        run: ls -R
+
