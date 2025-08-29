@@ -19,7 +19,7 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
 
       - name: Build Docker image
-        run: docker build -t suryaharanr/flask-todo:latest .
+        run: docker build -t haransurya/flask-todo:latest .
 
       - name: Push Docker image
-        run: docker push suryaharanr/flask-todo:latest
+        run: docker push haransurya/flask-todo:latest
